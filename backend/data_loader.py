@@ -5,6 +5,7 @@
 import pandas as pd
 import numpy as np
 import re
+import os
 import streamlit as st
 import nltk
 from nltk.corpus import stopwords
@@ -15,7 +16,7 @@ nltk.download('punkt', quiet=True)
 
 STOP_WORDS = set(stopwords.words("english"))
 TARGET_CLASSES = ["AGRICULTURE", "HORTICULTURE"]
-N_ROWS = 2000
+N_ROWS = 10000
 
 
 def clean_text(text: str) -> str:
@@ -36,17 +37,17 @@ def preprocessing_steps(text: str) -> dict:
     step4 = " ".join([t for t in tokens if t not in STOP_WORDS and len(t) > 1])
     return {
         "original": step0,
-        "lowercase": step1,
-        "no_punct": step2,
-        "normalized": step3,
-        "clean": step4
+        "case_folding": step1,
+        "punctuation_removal": step2,
+        "normalization": step3,
+        "stopword_removal": step4,
+        "final": step4,
     }
 
 
 @st.cache_data(show_spinner=False)
 def load_data(path: str, nrows: int = N_ROWS):
     """Load CSV data with caching."""
-    import os
     if not os.path.exists(path):
         return None
     return pd.read_csv(path, nrows=nrows, encoding="utf-8", on_bad_lines="skip")
@@ -54,14 +55,13 @@ def load_data(path: str, nrows: int = N_ROWS):
 
 def prepare_data(df: pd.DataFrame):
     """Prepare dataset: filter classes, clean text, encode labels."""
-    import os
     import joblib
-    
+
     df2 = df[["QueryText", "Sector"]].dropna()
     df2 = df2[df2["Sector"].isin(TARGET_CLASSES)].copy()
     df2["Sector"] = df2["Sector"].str.strip().str.upper()
     df2["clean_text"] = df2["QueryText"].apply(clean_text)
-    
+
     le_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "label_encoder.pkl")
     if os.path.exists(le_path):
         try:
@@ -73,7 +73,7 @@ def prepare_data(df: pd.DataFrame):
     else:
         le = LabelEncoder()
         df2["label"] = le.fit_transform(df2["Sector"])
-        
+
     return df2, le
 
 

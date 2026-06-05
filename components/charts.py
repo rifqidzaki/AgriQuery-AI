@@ -15,9 +15,9 @@ PLOTLY_THEME = dict(
 )
 
 # Color palettes
-EMERALD_PALETTE = ["#0E4B2E", "#1F7A4D", "#2E8B57", "#3D9B6B", "#5FAE6E", "#7BC17F"]
-EMERALD_GRADIENT = [[0, "#F7F5EE"], [0.5, "#A8D5B8"], [1, "#1F7A4D"]]
-DUAL_COLORS = ["#0E4B2E", "#5FAE6E"]
+EMERALD_PALETTE = ["#1B5E20", "#2E7D32", "#388E3C", "#43A047", "#66BB6A", "#A5D6A7"]
+EMERALD_GRADIENT = [[0, "#FAFAF5"], [0.5, "#A5D6A7"], [1, "#1B5E20"]]
+DUAL_COLORS = ["#1B5E20", "#66BB6A"]
 
 
 def plotly_bar(names, values, title, colors=None, text_format=".2f", show_text=True):
@@ -39,7 +39,7 @@ def plotly_bar(names, values, title, colors=None, text_format=".2f", show_text=T
         ))
 
     fig.update_layout(
-        title=dict(text=title, font=dict(family="Sora", size=15, color="#123524")),
+        title=dict(text=title, font=dict(family="Sora", size=15, color="#1A1A1A")),
         yaxis=dict(gridcolor="rgba(31,122,77,0.05)", zerolinecolor="rgba(31,122,77,0.1)"),
         showlegend=False,
         **PLOTLY_THEME
@@ -61,7 +61,7 @@ def plotly_horizontal_bar(tokens, values, title, color_scale=None):
         textposition="outside"
     ))
     fig.update_layout(
-        title=dict(text=title, font=dict(family="Sora", size=14, color="#123524")),
+        title=dict(text=title, font=dict(family="Sora", size=14, color="#1A1A1A")),
         xaxis_title="Frequency",
         height=max(400, len(tokens) * 22),
         **PLOTLY_THEME
@@ -88,7 +88,7 @@ def plotly_grouped_bar(categories, series_data, title, colors=None):
 
     fig.update_layout(
         barmode="group",
-        title=dict(text=title, font=dict(family="Sora", size=15, color="#123524")),
+        title=dict(text=title, font=dict(family="Sora", size=15, color="#1A1A1A")),
         yaxis=dict(gridcolor="rgba(31,122,77,0.05)"),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         **PLOTLY_THEME
@@ -106,11 +106,11 @@ def plotly_cm(cm, title, labels):
         aspect="auto"
     )
     fig.update_layout(
-        title=dict(text=title, font=dict(family="Sora", size=14, color="#123524")),
+        title=dict(text=title, font=dict(family="Sora", size=14, color="#1A1A1A")),
         coloraxis_showscale=False,
         **PLOTLY_THEME
     )
-    fig.update_traces(textfont=dict(family="Sora", size=18, color="#123524"))
+    fig.update_traces(textfont=dict(family="Sora", size=18, color="#1A1A1A"))
     return fig
 
 
@@ -139,7 +139,7 @@ def plotly_radar(series_data, categories, title, colors=None):
             radialaxis=dict(visible=True, range=[0, 105], tickfont=dict(size=10)),
             angularaxis=dict(tickfont=dict(size=11, family="Inter"))
         ),
-        title=dict(text=title, font=dict(family="Sora", size=15, color="#123524")),
+        title=dict(text=title, font=dict(family="Sora", size=15, color="#1A1A1A")),
         showlegend=True,
         legend=dict(font=dict(size=11)),
         **PLOTLY_THEME
@@ -160,7 +160,7 @@ def plotly_pie(labels, values, title, colors=None, hole=0.55):
         textinfo="percent+label"
     ))
     fig.update_layout(
-        title=dict(text=title, font=dict(family="Sora", size=15, color="#123524")),
+        title=dict(text=title, font=dict(family="Sora", size=15, color="#1A1A1A")),
         showlegend=True,
         **PLOTLY_THEME
     )
@@ -178,7 +178,7 @@ def plotly_histogram(df, x_col, color_col, title, nbins=50, color_map=None):
         color_discrete_map=color_map,
     )
     fig.update_layout(
-        title=dict(text=title, font=dict(family="Sora", size=15, color="#123524")),
+        title=dict(text=title, font=dict(family="Sora", size=15, color="#1A1A1A")),
         bargap=0.05,
         **PLOTLY_THEME
     )
@@ -208,7 +208,7 @@ def plotly_scatter_2d(x, y, labels, title, color_map=None):
         ))
 
     fig.update_layout(
-        title=dict(text=title, font=dict(family="Sora", size=14, color="#123524")),
+        title=dict(text=title, font=dict(family="Sora", size=14, color="#1A1A1A")),
         xaxis_title="Component 1",
         yaxis_title="Component 2",
         **PLOTLY_THEME
@@ -228,7 +228,7 @@ def plotly_heatmap(data, x_labels, y_labels, title, color_scale=None):
         aspect="auto"
     )
     fig.update_layout(
-        title=dict(text=title, font=dict(family="Sora", size=14, color="#123524")),
+        title=dict(text=title, font=dict(family="Sora", size=14, color="#1A1A1A")),
         **PLOTLY_THEME
     )
     fig.update_traces(textfont=dict(family="Inter", size=12))
@@ -261,7 +261,7 @@ def plotly_ranking_bar(names, values, title, highlight_best=True):
         textposition="outside"
     ))
     fig.update_layout(
-        title=dict(text=title, font=dict(family="Sora", size=15, color="#123524")),
+        title=dict(text=title, font=dict(family="Sora", size=15, color="#1A1A1A")),
         xaxis_title="Accuracy (%)",
         height=max(400, len(names) * 38),
         **PLOTLY_THEME

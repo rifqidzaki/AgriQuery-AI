@@ -1,0 +1,10 @@
+{
+  "id2label": {
+    "0": "AGRICULTURE",
+    "1": "HORTICULTURE"
+  },
+  "label2id": {
+    "AGRICULTURE": 0,
+    "HORTICULTURE": 1
+  }
+}

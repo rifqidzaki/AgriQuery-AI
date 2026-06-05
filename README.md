@@ -1,80 +1,105 @@
-# AgriMind AI — NLP Analytics Platform
+# Dashboard NLP Pertanian v6.0 (Final Research Edition) 🌾
 
-![AgriMind AI Version](https://img.shields.io/badge/Version-v5.0_Research_Edition-emerald)
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.28%2B-red)
+Aplikasi berbasis web (Streamlit) yang menyajikan hasil evaluasi dan perbandingan 13 metode ekstraksi fitur dan pemodelan klasifikasi teks (NLP) pada domain pertanian (klasifikasi query Agriculture vs Horticulture). 
 
-**AgriMind AI** adalah platform analitik Natural Language Processing (NLP) tingkat lanjut yang dibangun untuk membandingkan kinerja **NLP Klasik** (BoW, TF-IDF, N-Gram) dengan **Embedding Modern** (Word2Vec, GloVe, BERT) dalam melakukan klasifikasi query pertanian. Dashboard ini membandingkan dua algoritma Machine Learning: **Decision Tree** dan **Naive Bayes**.
+Penelitian ini membandingkan teknik representasi fitur **Klasik** (BoW, TF-IDF, N-Gram) dengan **Modern/Semantic** (Word2Vec, GloVe, BERT) dan **Transformer** (DistilBERT Fine-Tuning).
 
 ---
 
-## ✨ Fitur Utama
+## 🌟 Fitur Utama (v6.0)
 
-- **🚀 Real-time Inference:** Lakukan prediksi klasifikasi query teks secara instan dan lihat tingkat keyakinan (confidence score) dari berbagai kombinasi model.
-- **🏆 Model Comparison:** Bandingkan performa 12 kombinasi model dan representasi fitur secara berdampingan.
-- **💡 Explainable AI (XAI):** Pahami bagaimana model mengambil keputusan menggunakan analisis Feature Importance dan Keyword Contribution.
-- **🔍 Error Analysis:** Analisis dan temukan pola dari kesalahan klasifikasi model melalui visualisasi Confusion Matrix yang interaktif.
-- **📊 Dataset Explorer:** Eksplorasi dataset Kisan Query secara visual, lengkap dengan simulasi pipeline NLP interaktif (Stopword removal, tokenization).
+Dashboard ini telah dirombak total untuk kebutuhan sidang/presentasi penelitian:
 
-## 🛠️ Teknologi yang Digunakan
-- **Core:** Python, Streamlit, Pandas, NumPy
-- **Visualisasi:** Plotly
-- **Machine Learning:** Scikit-learn
-- **NLP Klasik:** NLTK
-- **NLP Modern:** Gensim (Word2Vec, GloVe), Sentence-Transformers (BERT)
+1. **No-Training Loading (Speed Optimized)**
+   - Semua 13 model langsung dimuat dari file `.pkl` yang sudah dilatih (pre-trained).
+   - Waktu loading dari awal hanya membutuhkan **< 30 detik**.
+
+2. **Integrasi 13 Kombinasi Model**
+   - **Classical NLP:** DT+BoW, NB+BoW, DT+TF-IDF, NB+TF-IDF, DT+N-Gram, NB+N-Gram
+   - **Semantic Embedding:** DT+Word2Vec, NB+Word2Vec, DT+GloVe, NB+GloVe
+   - **Contextual Embedding:** DT+BERT, NB+BERT
+   - **Transformer:** DistilBERT Fine-Tuning (End-to-End)
+
+3. **9 Halaman Analisis Komprehensif**
+   - **Overview:** Ringkasan hasil penelitian dan KPI performa terbaik.
+   - **Dataset Overview:** Distribusi kelas, top words, statistik panjang teks.
+   - **Preprocessing (BARU):** Visualisasi pipeline pembersihan teks interaktif (Raw → Case Folding → Punctuation → Stopword → Clean).
+   - **Feature Extraction:** Penjelasan terpusat untuk ketiga jenis ekstraksi fitur (Classical, Semantic, Contextual).
+   - **Training & Evaluation:** Detail Confusion Matrix dan Classification Report per model.
+   - **Model Comparison:** Tabel ranking 13 model dan visualisasi Radar Chart.
+   - **Error Analysis (BARU):** Komparasi Error Rate, detail False Positive / False Negative, dan *Auto-Generated Insights*.
+   - **Interactive Prediction:** Fitur untuk mencoba prediksi query secara real-time dengan semua model (termasuk DistilBERT).
+   - **About Project:** Ringkasan latar belakang proyek.
+
+4. **UI/UX Premium & Modern**
+   - Palet warna eksklusif "Agriculture Green" (`#1B5E20`, `#2E7D32`, `#66BB6A`).
+   - *Card-based layout*, transisi halus, dan tipografi modern (Sora, Inter, JetBrains Mono).
 
 ---
 
-## ⚙️ Cara Instalasi & Menjalankan Dashboard
+## ⚙️ Persyaratan Sistem
 
-1. **Buka Terminal / Command Prompt** dan masuk ke dalam direktori proyek ini:
+- Python 3.9 - 3.11
+- Minimal 4GB RAM (Direkomendasikan 8GB karena ada load Word2Vec, GloVe, BERT, dan DistilBERT).
+
+---
+
+## 🛠️ Cara Menjalankan Aplikasi
+
+1. Buka Terminal atau Command Prompt di folder proyek ini (`New Dasboard`).
+2. Aktifkan virtual environment:
    ```bash
-   cd "d:\SEMESTER 6\Pemrosesan Bahasa Alami (NLP)\New Dasboard"
+   # Di Windows
+   .\.venv\Scripts\activate
    ```
-
-2. **Buat Virtual Environment (Sangat Direkomendasikan)**
-   ```bash
-   python -m venv .venv
-   
-   # Aktivasi di Windows (PowerShell):
-   .\.venv\Scripts\Activate.ps1
-   
-   # Aktivasi di Windows (Command Prompt):
-   .\.venv\Scripts\activate.bat
-   ```
-
-3. **Install Dependensi**
-   Pastikan Anda menginstal semua dependensi yang diperlukan.
+3. Install dependensi (jika belum):
    ```bash
    pip install -r requirements.txt
    ```
-   *(Jika file `requirements.txt` belum lengkap, Anda bisa menginstal paket-paket ini secara manual: `pip install streamlit pandas numpy plotly scikit-learn nltk gensim sentence-transformers transformers`)*
-
-4. **Pastikan File Model Lokal Tersedia (Penting)**
-   Dashboard ini dioptimalkan untuk memuat model dari Google Colab Anda agar tidak perlu mengunduh data besar. Pastikan struktur berikut tersedia:
-   - `models/` berisi file `model_dt__*.pkl`, `model_nb__*.pkl`, `vectorizer_*.pkl`, dan `label_encoder.pkl`.
-   - `models/` atau `embeddings/` berisi embedding lokal seperti `word2vec_model.bin` dan `glove.6B.50d.txt`.
-   
-   *Catatan: Jika file tidak ditemukan, sistem memiliki sistem fallback yang akan melatih ulang model secara otomatis (bisa memakan waktu beberapa menit).*
-
-5. **Jalankan Aplikasi Streamlit**
+4. Pastikan dataset `query_agg.csv` berada di root folder.
+5. Jalankan Streamlit:
    ```bash
    streamlit run app.py
    ```
-
-6. **Buka di Browser**
-   Buka URL `http://localhost:8501` di web browser Anda.
+6. Aplikasi akan terbuka di browser (biasanya `http://localhost:8501`).
 
 ---
 
-## 📚 Struktur Direktori
-- `app.py`: File utama untuk menjalankan aplikasi Streamlit.
-- `backend/`: Script logika utama untuk ekstraksi fitur, pemuatan model, pelatihan, dan metrik NLP.
-- `components/`: Kumpulan modul komponen UI yang dapat digunakan ulang (kartu, grafik, sidebar).
-- `pages/`: Halaman-halaman terpisah untuk setiap fitur pada dashboard (Overview, Dataset, Model Training, dsb.).
-- `models/`: Penyimpanan untuk file `.pkl` dan model NLP (*pretrained*).
-- `styles.py`: Konfigurasi CSS terpusat untuk tema dan UI komponen.
+## 📁 Struktur Direktori Penting
+
+```
+New Dasboard/
+├── app.py                     # Entry point aplikasi Streamlit
+├── styles.py                  # Konfigurasi CSS/UI Premium
+├── README.md                  # Dokumentasi proyek
+├── query_agg.csv              # Dataset mentah
+│
+├── backend/                   # Logika backend
+│   ├── data_loader.py         # Memuat & preprocessing data
+│   ├── model_loader.py        # Memuat 12 model Sklearn
+│   ├── transformer_inference.py # Inferensi DistilBERT
+│   └── classical_nlp.py       # Penjelasan teks fitur klasik
+│
+├── components/                # Komponen UI
+│   ├── charts.py              # Custom Plotly charts
+│   └── sidebar.py             # Navigasi kiri
+│
+├── pages/                     # Berisi 9 halaman UI (p01 - p09)
+│
+├── models/                    # Folder 12 pre-trained model Sklearn (.pkl)
+│                              # & Vectorizer / Word2Vec / GloVe
+│
+└── transformer_model/         # Folder model DistilBERT (config, model.safetensors, dll)
+```
 
 ---
 
-**© 2026 AgriMind AI — NLP Research Edition**
+## 📝 Catatan Penting untuk GitHub
+
+Karena batasan ukuran file di GitHub (Max 100MB), file-file berikut **TIDAK DIUNGGAH** ke GitHub dan telah dimasukkan ke dalam `.gitignore`:
+- `query_agg.csv` (990MB)
+- `models/word2vec_model.bin` (Jika >100MB)
+- `models/glove.6B.50d.txt` (400MB)
+- `transformer_model/model.safetensors` (268MB)
+
+**PENTING**: Jika akan dipindahkan ke komputer dosen atau komputer lain, folder `models/` dan `transformer_model/` harus disalin utuh menggunakan Flashdisk atau Google Drive, BUKAN ditarik dari GitHub.

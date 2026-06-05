@@ -1,120 +1,144 @@
 # ════════════════════════════════════════════════════════════════
-# PAGE 01 — OVERVIEW / HERO
+# PAGE 01 — OVERVIEW
 # ════════════════════════════════════════════════════════════════
 
 import streamlit as st
-from components.metrics import render_metric_grid, render_section_header
-from components.charts import plotly_bar, plotly_cm, EMERALD_PALETTE
 
 
 def render(ss):
-    """Render the Overview page."""
     results = ss.get("results", {})
-    best_name = ss.get("best_name", "")
     df_clean = ss.get("df_clean")
+    best_name = ss.get("best_name", "")
     le = ss.get("le")
 
-    # ── Hero Section ──
+    # Hero
     st.markdown("""
-<div style='padding:40px 0 24px 0;'>
-<div class='ai-badge'>v5.0 Research Edition</div>
-<div class='ai-badge'>Decision Tree + Naive Bayes</div>
-<div class='ai-badge-gold'>🏆 Classical vs Modern NLP</div>
-<div class='hero-title'>Agricultural Query<br>Intelligence Platform.</div>
+<div style='padding:10px 0 20px;'>
+<div class='hero-title'>Dashboard NLP Pertanian</div>
 <div class='hero-subtitle'>
-Platform NLP analytics yang membandingkan representasi fitur klasik (BoW, TF-IDF, N-Gram) dengan embedding modern (Word2Vec, GloVe, BERT) untuk klasifikasi query pertanian menggunakan Decision Tree dan Naive Bayes.
+Analisis Perbandingan Representasi Fitur NLP Klasik dan Modern
+pada Klasifikasi Query Pertanian menggunakan Decision Tree, Naive Bayes,
+dan DistilBERT Fine-Tuning.
+</div>
+<div>
+<span class='badge'>📄 Penelitian Final</span>
+<span class='badge'>🌾 Agriculture & Horticulture</span>
+<span class='badge'>🤖 13 Model Kombinasi</span>
 </div>
 </div>
 """, unsafe_allow_html=True)
 
-    if not results:
-        st.info("⏳ Memuat data dan melatih model... Silakan tunggu.")
-        return
+    # KPI Cards
+    total_data = len(df_clean) if df_clean is not None else 0
+    n_classes = len(le.classes_) if le is not None else 2
+    n_models = len(results)
+    best_acc = results[best_name]["accuracy"] * 100 if best_name in results else 0
 
-    # ── Key Metrics ──
-    best_r = results[best_name]
-    acc = best_r['accuracy'] * 100
-    n_data = f"{len(df_clean):,}" if df_clean is not None else "—"
+    st.markdown(f"""
+<div class='kpi-grid'>
+<div class='kpi-card'>
+<div class='kpi-icon'>📊</div>
+<div class='kpi-label'>Total Data</div>
+<div class='kpi-value'>{total_data:,}</div>
+<div class='kpi-sub'>Baris data bersih</div>
+</div>
+<div class='kpi-card'>
+<div class='kpi-icon'>🏷️</div>
+<div class='kpi-label'>Jumlah Kelas</div>
+<div class='kpi-value'>{n_classes}</div>
+<div class='kpi-sub'>Agriculture & Horticulture</div>
+</div>
+<div class='kpi-card'>
+<div class='kpi-icon'>🧠</div>
+<div class='kpi-label'>Jumlah Model</div>
+<div class='kpi-value'>{n_models}</div>
+<div class='kpi-sub'>Kombinasi model dievaluasi</div>
+</div>
+<div class='kpi-card'>
+<div class='kpi-icon'>🏆</div>
+<div class='kpi-label'>Akurasi Terbaik</div>
+<div class='kpi-value'>{best_acc:.1f}%</div>
+<div class='kpi-sub-green'>🥇 {best_name}</div>
+</div>
+</div>
+""", unsafe_allow_html=True)
 
-    # Count available scenarios
-    n_models = 2  # DT + NB
-    n_classical = 3  # BoW, TF-IDF, N-Gram
-    n_modern = sum(1 for k in ["Word2Vec", "GloVe", "BERT"] if any(k in s for s in results.keys()))
-    total_combos = len(results)
-
-    render_metric_grid([
-        {"icon": "🎯", "label": "Best Accuracy", "value": f"{acc:.2f}", "unit": "%", "sub_green": best_name},
-        {"icon": "🗄️", "label": "Dataset Size", "value": n_data, "sub": "Processed queries"},
-        {"icon": "🤖", "label": "ML Models", "value": str(n_models), "sub": "Decision Tree + Naive Bayes"},
-        {"icon": "📝", "label": "Classical Features", "value": str(n_classical), "sub": "BoW, TF-IDF, N-Gram"},
-        {"icon": "🧠", "label": "Modern Embeddings", "value": str(n_modern), "sub": "Word2Vec, GloVe, BERT"},
-        {"icon": "⚡", "label": "Total Combinations", "value": str(total_combos), "sub": "Model × Feature"},
-    ])
-
-    # ── Research Summary ──
+    # Research Summary
     st.markdown("""
-<div class='glass-card'>
-<div style='display:flex; align-items:center; gap:12px; margin-bottom:16px;'>
-<div style='width:42px; height:42px; background:linear-gradient(135deg, rgba(31,122,77,0.1), rgba(95,174,110,0.1)); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;'>📋</div>
-<div style='font-family:Sora; font-weight:700; font-size:1.1rem; color:var(--text-main);'>Research Summary</div>
-</div>
-<div style='font-size:0.9rem; color:var(--text-secondary); line-height:1.8;'>
-<strong>Judul:</strong> Analisis Perbandingan Representasi Fitur NLP Klasik dan Modern pada Klasifikasi Query Pertanian Menggunakan Decision Tree dan Naive Bayes<br><br>
-<strong>Dataset:</strong> Kisan Query Analysis Dataset — berisi pertanyaan petani dari Kisan Call Centre (KCC) India<br><br>
-<strong>Task:</strong> Binary Text Classification — membedakan query sektor <strong>Agriculture</strong> dan <strong>Horticulture</strong><br><br>
-<strong>Tujuan:</strong> Membandingkan efektivitas representasi fitur NLP klasik (BoW, TF-IDF, N-Gram) vs embedding modern (Word2Vec, GloVe, BERT) dalam mengklasifikasikan query pertanian menggunakan dua algoritma machine learning.
-</div>
+<div class='section-header'>
+<div class='section-title'>📋 Ringkasan Penelitian</div>
 </div>
 """, unsafe_allow_html=True)
 
-    # ── Quick Comparison Charts ──
     col1, col2 = st.columns(2)
-
     with col1:
-        # Best accuracy per feature type
-        feature_types = []
-        feature_accs = []
-        feature_colors = []
-        for feat_name in ["BoW", "TF-IDF", "N-Gram", "Word2Vec", "GloVe", "BERT"]:
-            matching = {k: v for k, v in results.items() if feat_name in k}
-            if matching:
-                best_feat = max(matching, key=lambda x: matching[x]["accuracy"])
-                feature_types.append(feat_name)
-                feature_accs.append(matching[best_feat]["accuracy"] * 100)
-                feature_colors.append(EMERALD_PALETTE[len(feature_types) - 1] if len(feature_types) <= len(EMERALD_PALETTE) else "#5FAE6E")
-
-        fig = plotly_bar(feature_types, feature_accs, "Best Accuracy per Feature Type", feature_colors)
-        fig.update_layout(yaxis=dict(range=[0, 110]))
-        st.plotly_chart(fig, use_container_width=True)
+        st.markdown("""
+<div class='card'>
+<div style='font-family:Sora; font-weight:700; font-size:1rem; margin-bottom:10px;'>🎯 Tujuan Penelitian</div>
+<div style='font-size:0.88rem; color:var(--text-secondary); line-height:1.7;'>
+Membandingkan efektivitas representasi fitur NLP klasik (Bag of Words, TF-IDF, N-Gram)
+dengan representasi modern berbasis embedding (Word2Vec, GloVe, BERT) dan fine-tuning
+transformer (DistilBERT) untuk klasifikasi query pertanian ke dalam dua kategori:
+<b>Agriculture</b> dan <b>Horticulture</b>.
+</div>
+</div>
+""", unsafe_allow_html=True)
 
     with col2:
-        # Best model confusion matrix
-        if le is not None:
-            fig_cm = plotly_cm(best_r["cm"], f"Confusion Matrix — {best_name}", list(le.classes_))
-            st.plotly_chart(fig_cm, use_container_width=True)
+        st.markdown("""
+<div class='card'>
+<div style='font-family:Sora; font-weight:700; font-size:1rem; margin-bottom:10px;'>🔬 Metodologi</div>
+<div style='font-size:0.88rem; color:var(--text-secondary); line-height:1.7;'>
+Dataset <b>Kisan Query</b> diproses melalui pipeline NLP standar (case folding, stopword removal,
+tokenization). Fitur diekstrak menggunakan 6 metode, lalu dilatih dengan 3 algoritma
+(Decision Tree, Naive Bayes, DistilBERT), menghasilkan <b>13 kombinasi model</b>
+yang dievaluasi secara komprehensif.
+</div>
+</div>
+""", unsafe_allow_html=True)
 
-    # ── Quick Stats Cards ──
+    # Model groups overview
     st.markdown("""
-<div class='glass-card' style='display:flex; gap:40px; flex-wrap:wrap; justify-content:center;'>
-<div style='text-align:center;'>
-<div style='font-size:2.5rem;'>🌾</div>
-<div style='font-family:Sora; font-weight:700; font-size:1rem; margin-top:6px;'>Agriculture</div>
-<div style='font-size:0.8rem; color:var(--text-muted);'>Crop cultivation, farming</div>
+<div class='section-header'>
+<div class='section-title'>🗂️ Kelompok Model</div>
+<div class='section-subtitle'>13 kombinasi model yang dievaluasi dalam penelitian ini</div>
 </div>
-<div style='text-align:center;'>
-<div style='font-size:2.5rem;'>🌿</div>
-<div style='font-family:Sora; font-weight:700; font-size:1rem; margin-top:6px;'>Horticulture</div>
-<div style='font-size:0.8rem; color:var(--text-muted);'>Fruits, vegetables, flowers</div>
+""", unsafe_allow_html=True)
+
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        st.markdown("""
+<div class='card'>
+<div style='font-family:Sora; font-weight:700; font-size:0.9rem; margin-bottom:8px;'>📝 Classical NLP</div>
+<div style='font-size:0.82rem; color:var(--text-secondary); line-height:1.8;'>
+1. DT + BoW<br>2. NB + BoW<br>3. DT + TF-IDF<br>4. NB + TF-IDF<br>5. DT + N-Gram<br>6. NB + N-Gram
 </div>
-<div style='text-align:center;'>
-<div style='font-size:2.5rem;'>🧪</div>
-<div style='font-family:Sora; font-weight:700; font-size:1rem; margin-top:6px;'>6 Features</div>
-<div style='font-size:0.8rem; color:var(--text-muted);'>3 Classical + 3 Modern</div>
 </div>
-<div style='text-align:center;'>
-<div style='font-size:2.5rem;'>📊</div>
-<div style='font-family:Sora; font-weight:700; font-size:1rem; margin-top:6px;'>12 Models</div>
-<div style='font-size:0.8rem; color:var(--text-muted);'>2 ML × 6 features</div>
+""", unsafe_allow_html=True)
+    with c2:
+        st.markdown("""
+<div class='card'>
+<div style='font-family:Sora; font-weight:700; font-size:0.9rem; margin-bottom:8px;'>🧠 Semantic Embedding</div>
+<div style='font-size:0.82rem; color:var(--text-secondary); line-height:1.8;'>
+7. DT + Word2Vec<br>8. NB + Word2Vec<br>9. DT + GloVe<br>10. NB + GloVe
+</div>
+</div>
+""", unsafe_allow_html=True)
+    with c3:
+        st.markdown("""
+<div class='card'>
+<div style='font-family:Sora; font-weight:700; font-size:0.9rem; margin-bottom:8px;'>🔮 Contextual Embedding</div>
+<div style='font-size:0.82rem; color:var(--text-secondary); line-height:1.8;'>
+11. DT + BERT<br>12. NB + BERT
+</div>
+</div>
+""", unsafe_allow_html=True)
+    with c4:
+        st.markdown("""
+<div class='card'>
+<div style='font-family:Sora; font-weight:700; font-size:0.9rem; margin-bottom:8px;'>🚀 Transformer</div>
+<div style='font-size:0.82rem; color:var(--text-secondary); line-height:1.8;'>
+13. DistilBERT<br>Fine-Tuning
 </div>
 </div>
 """, unsafe_allow_html=True)
