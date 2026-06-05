@@ -1,0 +1,11 @@
+streamlit>=1.30.0
+pandas
+numpy
+scikit-learn
+plotly
+nltk
+gensim
+sentence-transformers
+torch
+torchvision
+joblib
