@@ -1,105 +1,145 @@
-# Dashboard NLP Pertanian v6.0 (Final Research Edition) 🌾
+<h1 align="center">🌱 Kisan Query NLP Dashboard: Feature Representation Analysis</h1>
 
-Aplikasi berbasis web (Streamlit) yang menyajikan hasil evaluasi dan perbandingan 13 metode ekstraksi fitur dan pemodelan klasifikasi teks (NLP) pada domain pertanian (klasifikasi query Agriculture vs Horticulture). 
+<div align="center">
+  <img src="https://img.shields.io/badge/Python-3.9+-blue.svg?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/Streamlit-FF4B4B.svg?style=for-the-badge&logo=Streamlit&logoColor=white" alt="Streamlit">
+  <img src="https://img.shields.io/badge/PyTorch-EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white" alt="PyTorch">
+  <img src="https://img.shields.io/badge/Scikit_Learn-F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white" alt="Scikit-Learn">
+  <img src="https://img.shields.io/badge/Hugging_Face-FFD21E.svg?style=for-the-badge&logo=HuggingFace&logoColor=black" alt="Hugging Face">
+  <img src="https://img.shields.io/badge/Plotly-3F4F75.svg?style=for-the-badge&logo=Plotly&logoColor=white" alt="Plotly">
+</div>
 
-Penelitian ini membandingkan teknik representasi fitur **Klasik** (BoW, TF-IDF, N-Gram) dengan **Modern/Semantic** (Word2Vec, GloVe, BERT) dan **Transformer** (DistilBERT Fine-Tuning).
+<br>
 
----
-
-## 🌟 Fitur Utama (v6.0)
-
-Dashboard ini telah dirombak total untuk kebutuhan sidang/presentasi penelitian:
-
-1. **No-Training Loading (Speed Optimized)**
-   - Semua 13 model langsung dimuat dari file `.pkl` yang sudah dilatih (pre-trained).
-   - Waktu loading dari awal hanya membutuhkan **< 30 detik**.
-
-2. **Integrasi 13 Kombinasi Model**
-   - **Classical NLP:** DT+BoW, NB+BoW, DT+TF-IDF, NB+TF-IDF, DT+N-Gram, NB+N-Gram
-   - **Semantic Embedding:** DT+Word2Vec, NB+Word2Vec, DT+GloVe, NB+GloVe
-   - **Contextual Embedding:** DT+BERT, NB+BERT
-   - **Transformer:** DistilBERT Fine-Tuning (End-to-End)
-
-3. **9 Halaman Analisis Komprehensif**
-   - **Overview:** Ringkasan hasil penelitian dan KPI performa terbaik.
-   - **Dataset Overview:** Distribusi kelas, top words, statistik panjang teks.
-   - **Preprocessing (BARU):** Visualisasi pipeline pembersihan teks interaktif (Raw → Case Folding → Punctuation → Stopword → Clean).
-   - **Feature Extraction:** Penjelasan terpusat untuk ketiga jenis ekstraksi fitur (Classical, Semantic, Contextual).
-   - **Training & Evaluation:** Detail Confusion Matrix dan Classification Report per model.
-   - **Model Comparison:** Tabel ranking 13 model dan visualisasi Radar Chart.
-   - **Error Analysis (BARU):** Komparasi Error Rate, detail False Positive / False Negative, dan *Auto-Generated Insights*.
-   - **Interactive Prediction:** Fitur untuk mencoba prediksi query secara real-time dengan semua model (termasuk DistilBERT).
-   - **About Project:** Ringkasan latar belakang proyek.
-
-4. **UI/UX Premium & Modern**
-   - Palet warna eksklusif "Agriculture Green" (`#1B5E20`, `#2E7D32`, `#66BB6A`).
-   - *Card-based layout*, transisi halus, dan tipografi modern (Sora, Inter, JetBrains Mono).
+<p align="center">
+  <b>A production-ready NLP dashboard evaluating and comparing 13 different text representation models (Classical vs. Semantic vs. Contextual Embeddings) for classifying agricultural text data.</b>
+</p>
 
 ---
 
-## ⚙️ Persyaratan Sistem
+## 📖 Overview
 
-- Python 3.9 - 3.11
-- Minimal 4GB RAM (Direkomendasikan 8GB karena ada load Word2Vec, GloVe, BERT, dan DistilBERT).
+The **Kisan Query NLP Dashboard** is an end-to-end Machine Learning research project built to evaluate how different Natural Language Processing (NLP) feature extraction techniques impact classification performance on agricultural queries. 
+
+The project classifies real-world queries into two main sectors: **Agriculture** and **Horticulture**, dealing with challenges such as class imbalance, short queries, and contextual ambiguity. It leverages a modern Streamlit interface to visualize the end-to-end NLP pipeline—from data preprocessing to deep error analysis and real-time inference.
+
+*(Insert a screenshot or GIF of your dashboard overview here)*
 
 ---
 
-## 🛠️ Cara Menjalankan Aplikasi
+## 🎯 Key Features
 
-1. Buka Terminal atau Command Prompt di folder proyek ini (`New Dasboard`).
-2. Aktifkan virtual environment:
+1. **Comprehensive Model Comparison (13 Models)**
+   * **Classical NLP:** BoW, TF-IDF, N-Gram paired with Decision Tree (DT) and Naive Bayes (NB).
+   * **Semantic Embeddings:** Word2Vec, GloVe paired with DT and NB.
+   * **Contextual Embeddings:** BERT features paired with DT and NB.
+   * **Transformers:** End-to-End Fine-Tuned DistilBERT.
+
+2. **Deep Error Analysis System**
+   * Goes beyond standard metrics (Accuracy, F1-Score).
+   * Dynamically tracks **False Positives** and **False Negatives**.
+   * Identifies root causes of misclassifications such as *Short Queries*, *Contextual Ambiguity*, and *Feature/Semantic Limitations*.
+   * Built-in *Explainability* (Feature Importance) to expose the top keywords driving classical model decisions.
+
+3. **Interactive & Optimized UI/UX**
+   * **Zero-Training Startup**: Loads 13 pre-trained `.pkl` and `.safetensors` models directly into memory for lightning-fast startup (< 30s load time).
+   * Interactive **Real-Time Prediction** engine to test out queries on any model.
+   * Step-by-step interactive **Text Preprocessing** visualization.
+
+---
+
+## 🧠 System Architecture
+
+```mermaid
+graph TD
+    A[Raw Dataset: query_agg.csv] --> B(Text Preprocessing)
+    B -->|Case Folding, Punctuation, Stopwords| C[Cleaned Text]
+    
+    C --> D1[Classical NLP]
+    C --> D2[Semantic Embeddings]
+    C --> D3[Transformer / Contextual]
+    
+    D1 -->|BoW, TF-IDF, N-Gram| E1[Sklearn Models]
+    D2 -->|Word2Vec, GloVe| E1
+    D3 -->|BERT Embeddings| E1
+    D3 -->|DistilBERT| E2[HuggingFace Pipeline]
+    
+    E1 --> F[Metrics & Error Analysis]
+    E2 --> F
+    
+    F --> G((Streamlit Interactive Dashboard))
+```
+
+---
+
+## 🛠️ Tech Stack Demonstrated
+
+* **Data Engineering & Preprocessing**: `Pandas`, `NLTK` (Stopword removal, tokenization).
+* **Machine Learning**: `Scikit-Learn` (Decision Tree, Naive Bayes, Vectorizers, Evaluation Metrics).
+* **Deep Learning & Transformers**: `PyTorch`, `Hugging Face Transformers` (DistilBERT Fine-tuning).
+* **Word Embeddings**: `Gensim` (Word2Vec).
+* **Data Visualization**: `Plotly` (Interactive Confusion Matrices, Radar Charts, Bar Charts).
+* **Software Engineering**: Modular architecture (Separation of UI `pages/`, `backend/`, and `components/`), caching mechanisms, and state management.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+* Python 3.9 - 3.11
+* Minimum 8GB RAM (due to the concurrent loading of BERT, GloVe, Word2Vec, and 12 Sklearn models).
+
+### Installation
+
+1. **Clone the repository**
    ```bash
-   # Di Windows
-   .\.venv\Scripts\activate
+   git clone https://github.com/rifqidzaki/NEW_Dasboard_NLP.git
+   cd NEW_Dasboard_NLP
    ```
-3. Install dependensi (jika belum):
+
+2. **Set up a virtual environment**
+   ```bash
+   python -m venv .venv
+   # Windows
+   .\.venv\Scripts\activate
+   # macOS/Linux
+   source .venv/bin/activate
+   ```
+
+3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
-4. Pastikan dataset `query_agg.csv` berada di root folder.
-5. Jalankan Streamlit:
+
+4. **Run the Application**
    ```bash
    streamlit run app.py
    ```
-6. Aplikasi akan terbuka di browser (biasanya `http://localhost:8501`).
+
+> **Note on Data and Large Models:** 
+> Due to GitHub's file size limits, the original dataset (`query_agg.csv` - ~1GB), `glove.6B.50d.txt` (400MB), and the `DistilBERT` `.safetensors` weights (268MB) are ignored via `.gitignore` and are not included in this repository.
 
 ---
 
-## 📁 Struktur Direktori Penting
+## 📊 Sample Visuals
 
-```
-New Dasboard/
-├── app.py                     # Entry point aplikasi Streamlit
-├── styles.py                  # Konfigurasi CSS/UI Premium
-├── README.md                  # Dokumentasi proyek
-├── query_agg.csv              # Dataset mentah
-│
-├── backend/                   # Logika backend
-│   ├── data_loader.py         # Memuat & preprocessing data
-│   ├── model_loader.py        # Memuat 12 model Sklearn
-│   ├── transformer_inference.py # Inferensi DistilBERT
-│   └── classical_nlp.py       # Penjelasan teks fitur klasik
-│
-├── components/                # Komponen UI
-│   ├── charts.py              # Custom Plotly charts
-│   └── sidebar.py             # Navigasi kiri
-│
-├── pages/                     # Berisi 9 halaman UI (p01 - p09)
-│
-├── models/                    # Folder 12 pre-trained model Sklearn (.pkl)
-│                              # & Vectorizer / Word2Vec / GloVe
-│
-└── transformer_model/         # Folder model DistilBERT (config, model.safetensors, dll)
-```
+*(You can replace the links below with actual screenshots of your dashboard in the future)*
+
+### 1. Interactive Error Analysis
+Focuses on explainability and uncovering the "Why" behind model mistakes.
+> *[Insert Image here: ![Error Analysis](./assets/error_analysis.png)]*
+
+### 2. Live Model Prediction
+Test agricultural queries in real-time across all 13 integrated models.
+> *[Insert Image here: ![Prediction](./assets/prediction.png)]*
 
 ---
 
-## 📝 Catatan Penting untuk GitHub
+## 📝 License
 
-Karena batasan ukuran file di GitHub (Max 100MB), file-file berikut **TIDAK DIUNGGAH** ke GitHub dan telah dimasukkan ke dalam `.gitignore`:
-- `query_agg.csv` (990MB)
-- `models/word2vec_model.bin` (Jika >100MB)
-- `models/glove.6B.50d.txt` (400MB)
-- `transformer_model/model.safetensors` (268MB)
+Distributed under the MIT License. See `LICENSE` for more information.
 
-**PENTING**: Jika akan dipindahkan ke komputer dosen atau komputer lain, folder `models/` dan `transformer_model/` harus disalin utuh menggunakan Flashdisk atau Google Drive, BUKAN ditarik dari GitHub.
+---
+<div align="center">
+<b>Built with passion for NLP Research and AI Engineering 🚀</b>
+</div>
