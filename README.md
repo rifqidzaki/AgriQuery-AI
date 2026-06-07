@@ -119,21 +119,7 @@ graph TD
 > **Note on Data and Large Models:** 
 > Due to GitHub's file size limits, the original dataset (`query_agg.csv` - ~1GB), `glove.6B.50d.txt` (400MB), and the `DistilBERT` `.safetensors` weights (268MB) are ignored via `.gitignore` and are not included in this repository.
 
----
 
-## 📊 Sample Visuals
-
-*(You can replace the links below with actual screenshots of your dashboard in the future)*
-
-### 1. Interactive Error Analysis
-Focuses on explainability and uncovering the "Why" behind model mistakes.
-> *[Insert Image here: ![Error Analysis](./assets/error_analysis.png)]*
-
-### 2. Live Model Prediction
-Test agricultural queries in real-time across all 13 integrated models.
-> *[Insert Image here: ![Prediction](./assets/prediction.png)]*
-
----
 
 ## 📝 License
 
