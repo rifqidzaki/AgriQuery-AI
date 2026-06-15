@@ -1,10 +1,6 @@
 # ════════════════════════════════════════════════════════════════
 # APP.PY — Main Entry Point
-# Dashboard NLP Pertanian v6.0 — Final Research Edition
-# ════════════════════════════════════════════════════════════════
-# Analisis Perbandingan Representasi Fitur NLP Klasik dan Modern
-# pada Klasifikasi Query Pertanian
-# Decision Tree, Naive Bayes, + DistilBERT Fine-Tuning
+# Dashboard NLP Pertanian v7.0 — Project v7 Final Research Edition
 # ════════════════════════════════════════════════════════════════
 
 import streamlit as st
@@ -14,7 +10,7 @@ warnings.filterwarnings('ignore')
 
 # ── Page Config ──
 st.set_page_config(
-    page_title="Dashboard NLP Pertanian",
+    page_title="Dashboard NLP Pertanian v7.0",
     page_icon="🌾",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -31,12 +27,18 @@ from backend.model_loader import load_and_evaluate_all
 from backend.transformer_inference import evaluate_transformer, is_transformer_available
 from sklearn.model_selection import train_test_split
 
-# ── Pages ──
+# ── Pages (existing) ──
 from pages import (
     p01_overview, p02_dataset, p03_preprocessing,
     p04_feature_extraction, p05_training_eval,
     p06_model_comparison, p07_error_analysis,
     p08_prediction, p09_about
+)
+
+# ── Pages (new v7.0) ──
+from pages import (
+    p_augmentation, p_balancing, p_top_models,
+    p_recall_improvement, p_distilbert, p_final_insights
 )
 
 
@@ -48,6 +50,8 @@ DATASET_PATHS = [
     os.path.join(os.path.dirname(__file__), "query_agg.csv"),
     r"d:\SEMESTER 6\Pemrosesan Bahasa Alami (NLP)\Dasboard NLP\query_agg.csv",
     r"d:\SEMESTER 6\Pemrosesan Bahasa Alami (NLP)\New Dasboard\query_agg.csv",
+    # Fallback to augmented dataset if main not found
+    os.path.join(os.path.dirname(__file__), "new file aug", "dataset_original.csv"),
 ]
 
 
@@ -66,7 +70,7 @@ def initialize_pipeline():
     dataset_path = find_dataset()
 
     if dataset_path is None:
-        st.error("❌ Dataset `query_agg.csv` tidak ditemukan!")
+        st.error("❌ Dataset tidak ditemukan!")
         st.markdown("""
 <div class='card-static' style='padding:24px;'>
 <div style='font-family:Sora; font-weight:700; margin-bottom:8px;'>📂 Cara Menambahkan Dataset</div>
@@ -94,10 +98,10 @@ Letakkan file <code>query_agg.csv</code> di folder yang sama dengan <code>app.py
 <div style='text-align:center; padding:50px 0 16px;'>
 <div style='font-size:2.5rem; margin-bottom:12px;'>🌾</div>
 <div style='font-family:Sora; font-size:1.3rem; font-weight:700; color:var(--text-main); margin-bottom:6px;'>
-Memuat Dashboard NLP Pertanian
+Memuat Dashboard NLP Pertanian v7.0
 </div>
 <div style='font-size:0.88rem; color:var(--text-muted);'>
-Memuat dataset, mengevaluasi 13 kombinasi model...
+Memuat dataset, mengevaluasi model... (15 skenario)
 </div>
 </div>
 """, unsafe_allow_html=True)
@@ -112,7 +116,7 @@ Memuat dataset, mengevaluasi 13 kombinasi model...
     update_progress(2, 15, "Menyiapkan data...")
     df_clean, le = prepare_data(df_raw)
 
-    # 2. Split data (same seed as training)
+    # 2. Split data
     X = df_clean["clean_text"]
     y = df_clean["label"].values
     X_train, X_test, y_train, y_test = train_test_split(
@@ -120,7 +124,7 @@ Memuat dataset, mengevaluasi 13 kombinasi model...
     )
 
     # 3. Load & evaluate all sklearn models
-    update_progress(3, 15, "Memuat dan mengevaluasi model...")
+    update_progress(3, 15, "Memuat dan mengevaluasi model sklearn...")
     eval_results = load_and_evaluate_all(X_test, y_test, progress_callback=update_progress)
 
     # 4. Evaluate transformer if available
@@ -129,7 +133,6 @@ Memuat dataset, mengevaluasi 13 kombinasi model...
         transformer_metrics = evaluate_transformer(X_test.tolist(), y_test)
         if transformer_metrics is not None:
             eval_results["results"]["DistilBERT Fine-Tuning"] = transformer_metrics
-            # Check if transformer is better
             best = eval_results["best_name"]
             if transformer_metrics["accuracy"] > eval_results["results"].get(best, {}).get("accuracy", 0):
                 eval_results["best_name"] = "DistilBERT Fine-Tuning"
@@ -171,6 +174,7 @@ def main():
 
     ss = st.session_state
 
+    # ── Existing Pages ──
     if menu == "🏠 Overview":
         p01_overview.render(ss)
     elif menu == "📂 Dataset Overview":
@@ -189,6 +193,19 @@ def main():
         p08_prediction.render(ss)
     elif menu == "ℹ️ About Project":
         p09_about.render(ss)
+    # ── New v7.0 Pages ──
+    elif menu == "🔬 Augmentation Analysis":
+        p_augmentation.render(ss)
+    elif menu == "⚖️ Balancing Analysis":
+        p_balancing.render(ss)
+    elif menu == "🏆 Top Performing Models":
+        p_top_models.render(ss)
+    elif menu == "📈 Recall Improvement":
+        p_recall_improvement.render(ss)
+    elif menu == "🤖 DistilBERT Analysis":
+        p_distilbert.render(ss)
+    elif menu == "💡 Final Insights":
+        p_final_insights.render(ss)
 
 
 if __name__ == "__main__":

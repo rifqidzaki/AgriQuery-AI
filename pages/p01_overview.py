@@ -1,8 +1,9 @@
 # ════════════════════════════════════════════════════════════════
-# PAGE 01 — OVERVIEW
+# PAGE 01 — OVERVIEW (v7.0 Final Research Edition)
 # ════════════════════════════════════════════════════════════════
 
 import streamlit as st
+from backend.research_data import DATASET_ORIGINAL, DATASET_AUGMENTED, SCENARIO_RESULTS, TOP_MODELS
 
 
 def render(ss):
@@ -17,53 +18,117 @@ def render(ss):
 <div class='hero-title'>Dashboard NLP Pertanian</div>
 <div class='hero-subtitle'>
 Analisis Perbandingan Representasi Fitur NLP Klasik dan Modern
-pada Klasifikasi Query Pertanian menggunakan Decision Tree, Naive Bayes,
-dan DistilBERT Fine-Tuning.
+pada Klasifikasi Query Pertanian — Project v7 Final Research Edition
+dengan 15 Skenario Model × 2 Dataset (Original & Augmented) = 30 Eksperimen.
 </div>
 <div>
-<span class='badge'>📄 Penelitian Final</span>
+<span class='badge'>📄 Project v7 Final</span>
 <span class='badge'>🌾 Agriculture & Horticulture</span>
-<span class='badge'>🤖 13 Model Kombinasi</span>
+<span class='badge'>🤖 15 Skenario Model</span>
+<span class='badge'>🔬 30 Eksperimen</span>
 </div>
 </div>
 """, unsafe_allow_html=True)
 
-    # KPI Cards
-    total_data = len(df_clean) if df_clean is not None else 0
-    n_classes = len(le.classes_) if le is not None else 2
-    n_models = len(results)
-    best_acc = results[best_name]["accuracy"] * 100 if best_name in results else 0
+    # ── KPI Cards Row 1 ──────────────────────────────────────────
+    top = TOP_MODELS
+    best_acc_val = top["best_accuracy"]["accuracy"] * 100
+    best_rec_val = top["best_recall"]["recall"] * 100
+    best_f1_val = top["best_f1"]["f1"] * 100
+    imbalance_before = DATASET_ORIGINAL["imbalance_ratio"]
+    imbalance_after = DATASET_AUGMENTED["imbalance_ratio"]
+    imbalance_reduction = ((imbalance_before - imbalance_after) / imbalance_before) * 100
 
     st.markdown(f"""
 <div class='kpi-grid'>
 <div class='kpi-card'>
-<div class='kpi-icon'>📊</div>
-<div class='kpi-label'>Total Data</div>
-<div class='kpi-value'>{total_data:,}</div>
-<div class='kpi-sub'>Baris data bersih</div>
-</div>
-<div class='kpi-card'>
-<div class='kpi-icon'>🏷️</div>
-<div class='kpi-label'>Jumlah Kelas</div>
-<div class='kpi-value'>{n_classes}</div>
-<div class='kpi-sub'>Agriculture & Horticulture</div>
-</div>
-<div class='kpi-card'>
-<div class='kpi-icon'>🧠</div>
-<div class='kpi-label'>Jumlah Model</div>
-<div class='kpi-value'>{n_models}</div>
-<div class='kpi-sub'>Kombinasi model dievaluasi</div>
-</div>
-<div class='kpi-card'>
 <div class='kpi-icon'>🏆</div>
-<div class='kpi-label'>Akurasi Terbaik</div>
-<div class='kpi-value'>{best_acc:.1f}%</div>
-<div class='kpi-sub-green'>🥇 {best_name}</div>
+<div class='kpi-label'>Best Accuracy</div>
+<div class='kpi-value'>{best_acc_val:.2f}%</div>
+<div class='kpi-sub-green'>🥇 {top["best_accuracy"]["name"]}</div>
+</div>
+<div class='kpi-card'>
+<div class='kpi-icon'>📡</div>
+<div class='kpi-label'>Best Recall</div>
+<div class='kpi-value'>{best_rec_val:.2f}%</div>
+<div class='kpi-sub-green'>🏅 {top["best_recall"]["name"]}</div>
+</div>
+<div class='kpi-card'>
+<div class='kpi-icon'>⚡</div>
+<div class='kpi-label'>Best F1-Score</div>
+<div class='kpi-value'>{best_f1_val:.2f}%</div>
+<div class='kpi-sub-green'>🎖️ {top["best_f1"]["name"]}</div>
+</div>
+<div class='kpi-card'>
+<div class='kpi-icon'>⚖️</div>
+<div class='kpi-label'>Imbalance Reduction</div>
+<div class='kpi-value'>{imbalance_reduction:.0f}%</div>
+<div class='kpi-sub-green'>12.0:1 → 2.40:1</div>
 </div>
 </div>
 """, unsafe_allow_html=True)
 
-    # Research Summary
+    # ── Dataset Original vs Augmented ───────────────────────────
+    st.markdown("""
+<div class='section-header'>
+<div class='section-title'>📂 Dataset: Original vs Augmented</div>
+</div>
+""", unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        orig = DATASET_ORIGINAL
+        st.markdown(f"""
+<div class='card' style='border-left:4px solid #E74C3C;'>
+<div style='font-family:Sora; font-weight:700; font-size:1rem; margin-bottom:14px; color:#E74C3C;'>📁 Dataset Original</div>
+<div style='display:grid; grid-template-columns:1fr 1fr; gap:10px;'>
+<div style='background:rgba(0,0,0,0.04); padding:10px; border-radius:8px;'>
+<div style='font-size:0.65rem; color:var(--text-muted);'>Total</div>
+<div style='font-weight:700; font-size:1.1rem;'>{orig["total"]:,}</div>
+</div>
+<div style='background:rgba(0,0,0,0.04); padding:10px; border-radius:8px;'>
+<div style='font-size:0.65rem; color:var(--text-muted);'>Imbalance</div>
+<div style='font-weight:700; font-size:1.1rem; color:#E74C3C;'>{orig["imbalance_ratio"]:.1f}:1</div>
+</div>
+<div style='background:rgba(0,0,0,0.04); padding:10px; border-radius:8px;'>
+<div style='font-size:0.65rem; color:var(--text-muted);'>Agriculture</div>
+<div style='font-weight:700;'>{orig["agriculture"]:,}</div>
+</div>
+<div style='background:rgba(0,0,0,0.04); padding:10px; border-radius:8px;'>
+<div style='font-size:0.65rem; color:var(--text-muted);'>Horticulture</div>
+<div style='font-weight:700; color:#E74C3C;'>{orig["horticulture"]:,}</div>
+</div>
+</div>
+</div>
+""", unsafe_allow_html=True)
+
+    with col2:
+        aug = DATASET_AUGMENTED
+        st.markdown(f"""
+<div class='card' style='border-left:4px solid var(--primary);'>
+<div style='font-family:Sora; font-weight:700; font-size:1rem; margin-bottom:14px; color:var(--primary);'>✅ Dataset Augmented</div>
+<div style='display:grid; grid-template-columns:1fr 1fr; gap:10px;'>
+<div style='background:rgba(27,94,32,0.06); padding:10px; border-radius:8px;'>
+<div style='font-size:0.65rem; color:var(--text-muted);'>Total</div>
+<div style='font-weight:700; font-size:1.1rem;'>{aug["total"]:,}</div>
+</div>
+<div style='background:rgba(27,94,32,0.06); padding:10px; border-radius:8px;'>
+<div style='font-size:0.65rem; color:var(--text-muted);'>Imbalance</div>
+<div style='font-weight:700; font-size:1.1rem; color:var(--primary);'>{aug["imbalance_ratio"]:.2f}:1 ↓</div>
+</div>
+<div style='background:rgba(27,94,32,0.06); padding:10px; border-radius:8px;'>
+<div style='font-size:0.65rem; color:var(--text-muted);'>Agriculture</div>
+<div style='font-weight:700;'>{aug["agriculture"]:,}</div>
+</div>
+<div style='background:rgba(27,94,32,0.06); padding:10px; border-radius:8px;'>
+<div style='font-size:0.65rem; color:var(--text-muted);'>Horticulture</div>
+<div style='font-weight:700; color:var(--primary);'>{aug["horticulture"]:,} ↑</div>
+</div>
+</div>
+</div>
+""", unsafe_allow_html=True)
+
+    # ── Research Summary ─────────────────────────────────────────
     st.markdown("""
 <div class='section-header'>
 <div class='section-title'>📋 Ringkasan Penelitian</div>
@@ -76,10 +141,11 @@ dan DistilBERT Fine-Tuning.
 <div class='card'>
 <div style='font-family:Sora; font-weight:700; font-size:1rem; margin-bottom:10px;'>🎯 Tujuan Penelitian</div>
 <div style='font-size:0.88rem; color:var(--text-secondary); line-height:1.7;'>
-Membandingkan efektivitas representasi fitur NLP klasik (Bag of Words, TF-IDF, N-Gram)
-dengan representasi modern berbasis embedding (Word2Vec, GloVe, BERT) dan fine-tuning
+Membandingkan efektivitas representasi fitur NLP klasik (BoW, TF-IDF, N-Gram),
+non-kontekstual (Word2Vec, FastText, GloVe), kontekstual (BERT), dan fine-tuning
 transformer (DistilBERT) untuk klasifikasi query pertanian ke dalam dua kategori:
-<b>Agriculture</b> dan <b>Horticulture</b>.
+<b>Agriculture</b> dan <b>Horticulture</b>, serta menganalisis dampak augmentasi data
+terhadap peningkatan performa pada kelas minoritas.
 </div>
 </div>
 """, unsafe_allow_html=True)
@@ -89,19 +155,19 @@ transformer (DistilBERT) untuk klasifikasi query pertanian ke dalam dua kategori
 <div class='card'>
 <div style='font-family:Sora; font-weight:700; font-size:1rem; margin-bottom:10px;'>🔬 Metodologi</div>
 <div style='font-size:0.88rem; color:var(--text-secondary); line-height:1.7;'>
-Dataset <b>Kisan Query</b> diproses melalui pipeline NLP standar (case folding, stopword removal,
-tokenization). Fitur diekstrak menggunakan 6 metode, lalu dilatih dengan 3 algoritma
-(Decision Tree, Naive Bayes, DistilBERT), menghasilkan <b>13 kombinasi model</b>
-yang dievaluasi secara komprehensif.
+Dataset <b>Kisan Query</b> (9.939 data) diaugmentasi menggunakan Synonym Replacement,
+Contextual BERT, dan Back Translation (EN-ID-EN, EN-JA-EN) menjadi 13.003 data.
+Class balancing menggunakan RandomOverSampler dan SMOTE. Evaluasi menggunakan
+<b>15 skenario model</b> pada dataset original dan augmented
+= <b>30 total eksperimen</b>.
 </div>
 </div>
 """, unsafe_allow_html=True)
 
-    # Model groups overview
+    # ── Model Groups ─────────────────────────────────────────────
     st.markdown("""
 <div class='section-header'>
-<div class='section-title'>🗂️ Kelompok Model</div>
-<div class='section-subtitle'>13 kombinasi model yang dievaluasi dalam penelitian ini</div>
+<div class='section-title'>🗂️ Kelompok Model (15 Skenario)</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -118,9 +184,9 @@ yang dievaluasi secara komprehensif.
     with c2:
         st.markdown("""
 <div class='card'>
-<div style='font-family:Sora; font-weight:700; font-size:0.9rem; margin-bottom:8px;'>🧠 Semantic Embedding</div>
+<div style='font-family:Sora; font-weight:700; font-size:0.9rem; margin-bottom:8px;'>🧠 Non-Contextual Embedding</div>
 <div style='font-size:0.82rem; color:var(--text-secondary); line-height:1.8;'>
-7. DT + Word2Vec<br>8. NB + Word2Vec<br>9. DT + GloVe<br>10. NB + GloVe
+7. DT + Word2Vec<br>8. NB + Word2Vec<br>9. DT + FastText<br>10. NB + FastText<br>11. DT + GloVe<br>12. NB + GloVe
 </div>
 </div>
 """, unsafe_allow_html=True)
@@ -129,7 +195,7 @@ yang dievaluasi secara komprehensif.
 <div class='card'>
 <div style='font-family:Sora; font-weight:700; font-size:0.9rem; margin-bottom:8px;'>🔮 Contextual Embedding</div>
 <div style='font-size:0.82rem; color:var(--text-secondary); line-height:1.8;'>
-11. DT + BERT<br>12. NB + BERT
+13. DT + BERT<br>14. NB + BERT
 </div>
 </div>
 """, unsafe_allow_html=True)
@@ -138,7 +204,7 @@ yang dievaluasi secara komprehensif.
 <div class='card'>
 <div style='font-family:Sora; font-weight:700; font-size:0.9rem; margin-bottom:8px;'>🚀 Transformer</div>
 <div style='font-size:0.82rem; color:var(--text-secondary); line-height:1.8;'>
-13. DistilBERT<br>Fine-Tuning
+15. DistilBERT<br>Fine-Tuning
 </div>
 </div>
 """, unsafe_allow_html=True)
